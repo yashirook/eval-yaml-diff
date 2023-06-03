@@ -1,15 +1,12 @@
 package main
 
 import (
-	"eval-yaml-diff/internal/gateway"
 	"eval-yaml-diff/internal/usecase"
 	"os"
 )
 
 func main() {
-	eval := usecase.Eval{
-		DiffPort: &gateway.Diff{},
-	}
+	eval := usecase.Eval{}
 
 	err := eval.Do("../example/source.yaml", "../example/target.yaml")
 	if err != nil {
