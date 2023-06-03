@@ -32,10 +32,3 @@ spec:
         image: my-app:1.0.0
         ports:
         - containerPort: 9376
----
-foo: missing-in-b
----
-this:
-  is:
-    the: same
-    empty:

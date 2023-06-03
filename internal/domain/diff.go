@@ -1,7 +1,6 @@
 package domain
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -23,10 +22,8 @@ func (df DiffFinder) Find(oldData, newData interface{}) (DiffList, error) {
 }
 
 func findDifferences(oldData, newData interface{}, path string, diffs *DiffList) {
-	fmt.Println("test 1")
 	switch oldValue := oldData.(type) {
 	case map[interface{}]interface{}:
-		fmt.Println("map case")
 		newValue, ok := newData.(map[interface{}]interface{})
 		if !ok {
 			// データの型が一致しない場合、変更が発生したと判断してDiffを追加する
@@ -53,7 +50,6 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 		}
 
 	case []interface{}:
-		fmt.Println("slice case")
 		newValue, ok := newData.([]interface{})
 		if !ok {
 			// データの型が一致しない場合、変更が発生したと判断してDiffを追加する
@@ -72,7 +68,6 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 		}
 
 	default:
-		fmt.Println("value case")
 		if oldValue != newData {
 			// 値が異なる場合、変更が発生したと判断してDiffを追加する
 			*diffs = append(*diffs, Diff{ChangeType: "change", Path: path})

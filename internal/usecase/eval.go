@@ -4,8 +4,6 @@ import (
 	"eval-yaml-diff/internal/domain"
 	"io/ioutil"
 	"log"
-
-	"gopkg.in/yaml.v2"
 )
 
 type Eval struct {
@@ -22,23 +20,31 @@ func (e Eval) Do(source, target string) error {
 		return err
 	}
 
-	var oldData interface{}
-	var newData interface{}
-
-	if err := yaml.Unmarshal(oldYAMLData, &oldData); err != nil {
-		log.Fatal(err)
-	}
-
-	if err := yaml.Unmarshal(newYAMLData, &newData); err != nil {
-		log.Fatal(err)
-	}
-
 	diffFinder := domain.DiffFinder{}
-	diff, err := diffFinder.Find(oldData, newData)
+
+	oldYamlDocs, err := domain.NewYamlDocs(oldYAMLData)
 	if err != nil {
 		return err
 	}
 
-	log.Println(diff)
+	newYamlDocs, err := domain.NewYamlDocs(newYAMLData)
+	if err != nil {
+		return err
+	}
+
+	for i, oldYamlDoc := range oldYamlDocs {
+		diff, err := diffFinder.Find(oldYamlDoc, newYamlDocs[i])
+		if err != nil {
+			return err
+		}
+		log.Println(diff)
+
+	}
+
+	// if len(oldData) != len(newData) {
+	// 	fmt.Println("Different number of yaml documents")
+	// 	return err
+	// }
+
 	return nil
 }
