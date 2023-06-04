@@ -2,51 +2,39 @@ package usecase
 
 import (
 	"eval-yaml-diff/internal/domain"
+	"eval-yaml-diff/internal/port"
 	"fmt"
-	"io/ioutil"
 	"log"
 )
 
 type Eval struct {
+	YAMLDocsPort port.YAMLDocsPort
 }
 
-func (e Eval) Do(source, target string) error {
-	// TODO: YAML Docsのスライスを取得するところをGatewayのレイヤにまとめる。
-	oldYAMLData, err := ioutil.ReadFile(source)
+func (e Eval) Do(baseline, new string) error {
+	baseYamlDocs, err := e.YAMLDocsPort.Get(baseline)
 	if err != nil {
 		return err
 	}
-
-	newYAMLData, err := ioutil.ReadFile(target)
-	if err != nil {
-		return err
-	}
-
-	oldYamlDocs, err := domain.NewYamlDocs(oldYAMLData)
-	if err != nil {
-		return err
-	}
-
-	newYamlDocs, err := domain.NewYamlDocs(newYAMLData)
+	newYamlDocs, err := e.YAMLDocsPort.Get(new)
 	if err != nil {
 		return err
 	}
 
 	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
-	if len(oldYamlDocs) != len(newYamlDocs) {
+	if len(baseYamlDocs) != len(newYamlDocs) {
 		fmt.Println("Different number of yaml documents")
 		return err
 	}
 
 	diffFinder := domain.DiffFinder{}
 	// TODO: マルチドキュメントの場合にいい感じに差分を取得できるようにする
-	for i, oldYamlDoc := range oldYamlDocs {
-		diff, err := diffFinder.Find(oldYamlDoc, newYamlDocs[i])
+	for i, baseYamlDoc := range baseYamlDocs {
+		diff, err := diffFinder.Find(baseYamlDoc, newYamlDocs[i])
 		if err != nil {
 			return err
 		}
 		log.Println(diff)
-
 	}
 
 	return nil
