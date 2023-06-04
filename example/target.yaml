@@ -22,11 +22,13 @@ spec:
     metadata:
       labels:
         app: MyApp
+        version: 0.0.1
     spec:
       containers:
       - name: app
         ports:
         - containerPort: 9376
+        - secondPort: 1010
         image: my-app:1.1.0
 metadata:
   name: app-deployment

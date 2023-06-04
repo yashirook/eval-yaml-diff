@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"eval-yaml-diff/internal/domain"
+	"fmt"
 	"io/ioutil"
 	"log"
 )
@@ -10,6 +11,7 @@ type Eval struct {
 }
 
 func (e Eval) Do(source, target string) error {
+	// TODO: YAML Docsのスライスを取得するところをGatewayのレイヤにまとめる。
 	oldYAMLData, err := ioutil.ReadFile(source)
 	if err != nil {
 		return err
@@ -19,8 +21,6 @@ func (e Eval) Do(source, target string) error {
 	if err != nil {
 		return err
 	}
-
-	diffFinder := domain.DiffFinder{}
 
 	oldYamlDocs, err := domain.NewYamlDocs(oldYAMLData)
 	if err != nil {
@@ -32,6 +32,14 @@ func (e Eval) Do(source, target string) error {
 		return err
 	}
 
+	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
+	if len(oldYamlDocs) != len(newYamlDocs) {
+		fmt.Println("Different number of yaml documents")
+		return err
+	}
+
+	diffFinder := domain.DiffFinder{}
+	// TODO: マルチドキュメントの場合にいい感じに差分を取得できるようにする
 	for i, oldYamlDoc := range oldYamlDocs {
 		diff, err := diffFinder.Find(oldYamlDoc, newYamlDocs[i])
 		if err != nil {
@@ -40,11 +48,6 @@ func (e Eval) Do(source, target string) error {
 		log.Println(diff)
 
 	}
-
-	// if len(oldData) != len(newData) {
-	// 	fmt.Println("Different number of yaml documents")
-	// 	return err
-	// }
 
 	return nil
 }
