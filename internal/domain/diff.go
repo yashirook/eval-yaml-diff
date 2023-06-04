@@ -5,8 +5,27 @@ import (
 )
 
 type Diff struct {
-	ChangeType string // 変更の種類（追加、削除、変更など）
-	Path       string // 変更が発生した場所（パス）
+	ChangeType ChangeType // 変更の種類（追加、削除、変更など）
+	Path       string     // 変更が発生した場所（パス）
+	Allowed    bool
+}
+
+type ChangeType string
+
+const (
+	ChangeTypeAdd    ChangeType = "add"
+	ChangeTypeDelete ChangeType = "delete"
+	ChangeTypeChange ChangeType = "change"
+	ChangeTypeAll    ChangeType = "all"
+)
+
+func newDiff(changeType ChangeType, path string) Diff {
+	return Diff{ChangeType: changeType, Path: path}
+}
+
+func (d Diff) Allow() Diff {
+	d.Allowed = true
+	return d
 }
 
 type DiffList []Diff
@@ -27,7 +46,7 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 		newValue, ok := newData.(map[interface{}]interface{})
 		if !ok {
 			// データの型が一致しない場合、変更が発生したと判断してDiffを追加する
-			*diffs = append(*diffs, Diff{ChangeType: "change", Path: path})
+			*diffs = append(*diffs, Diff{ChangeType: ChangeTypeChange, Path: path})
 			return
 		}
 
@@ -35,7 +54,7 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 			newPath := path + "." + key.(string)
 			if newValue[key] == nil {
 				// 新しいデータにキーが存在しない場合、削除が発生したと判断してDiffを追加する
-				*diffs = append(*diffs, Diff{ChangeType: "delete", Path: newPath})
+				*diffs = append(*diffs, Diff{ChangeType: ChangeTypeDelete, Path: newPath})
 			} else {
 				findDifferences(value, newValue[key], newPath, diffs)
 			}
@@ -45,7 +64,7 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 			if oldValue[key] == nil {
 				// 古いデータにキーが存在しない場合、追加が発生したと判断してDiffを追加する
 				newPath := path + "." + key.(string)
-				*diffs = append(*diffs, Diff{ChangeType: "add", Path: newPath})
+				*diffs = append(*diffs, Diff{ChangeType: ChangeTypeAdd, Path: newPath})
 			}
 		}
 
@@ -53,13 +72,13 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 		newValue, ok := newData.([]interface{})
 		if !ok {
 			// データの型が一致しない場合、変更が発生したと判断してDiffを追加する
-			*diffs = append(*diffs, Diff{ChangeType: "change", Path: path})
+			*diffs = append(*diffs, Diff{ChangeType: ChangeTypeChange, Path: path})
 			return
 		}
 
 		// スライスの要素数が異なる場合、変更が発生したと判断してDiffを追加する
 		if len(oldValue) != len(newValue) {
-			*diffs = append(*diffs, Diff{ChangeType: "change", Path: path})
+			*diffs = append(*diffs, Diff{ChangeType: ChangeTypeChange, Path: path})
 			return
 		}
 
@@ -70,7 +89,7 @@ func findDifferences(oldData, newData interface{}, path string, diffs *DiffList)
 	default:
 		if oldValue != newData {
 			// 値が異なる場合、変更が発生したと判断してDiffを追加する
-			*diffs = append(*diffs, Diff{ChangeType: "change", Path: path})
+			*diffs = append(*diffs, Diff{ChangeType: ChangeTypeChange, Path: path})
 		}
 	}
 

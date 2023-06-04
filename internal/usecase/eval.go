@@ -28,6 +28,7 @@ func (e Eval) Do(baseline, new string) error {
 	}
 
 	diffFinder := domain.DiffFinder{}
+	diffs := make(domain.DiffList, 0)
 	// TODO: マルチドキュメントの場合にいい感じに差分を取得できるようにする
 	for i, baseYamlDoc := range baseYamlDocs {
 		diff, err := diffFinder.Find(baseYamlDoc, newYamlDocs[i])
@@ -35,7 +36,14 @@ func (e Eval) Do(baseline, new string) error {
 			return err
 		}
 		log.Println(diff)
+		diffs = append(diffs, diff...)
 	}
+
+	policies := []domain.Policy{
+		{Path: ".spec.template.metadata.labels.version", ChangeType: domain.ChangeTypeAdd, Recursive: false},
+	}
+	pc := domain.NewPolicyChecker(policies)
+	pc.ScanAll(diffs)
 
 	return nil
 }
