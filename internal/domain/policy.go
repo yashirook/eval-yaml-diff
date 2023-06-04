@@ -19,13 +19,17 @@ func NewPolicyChecker(policies []Policy) PolicyChecker {
 }
 
 func (pc PolicyChecker) CheckAll(diffs DiffList) error {
-	evaluatedDiffs := make([]Diff, 0)
+	allowedDiffs := make([]Diff, 0)
+	deniedDiffs := make([]Diff, 0)
 	for _, diff := range diffs {
 		if ok := pc.Check(diff); ok {
-			evaluatedDiffs = append(evaluatedDiffs, diff.Allow())
+			allowedDiffs = append(allowedDiffs, diff.Allow())
+		} else {
+			deniedDiffs = append(deniedDiffs, diff)
 		}
 	}
-	fmt.Println(evaluatedDiffs)
+	fmt.Println(allowedDiffs)
+	fmt.Println(deniedDiffs)
 	return nil
 }
 
