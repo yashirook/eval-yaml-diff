@@ -3,9 +3,9 @@ package domain
 import "fmt"
 
 type Policy struct {
-	Path       string
-	ChangeType ChangeType
-	Recursive  bool
+	Path       string     `yaml:"path"`
+	ChangeType ChangeType `yaml:"changeType"`
+	Recursive  bool       `yaml:"recursive"`
 }
 
 type PolicyChecker struct {

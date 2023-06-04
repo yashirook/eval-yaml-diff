@@ -1,7 +1,7 @@
 package domain
 
 type Config struct {
-	AllowedPolicies
+	AllowedPolicies `yaml:"allowedPolicies"`
 }
 
 type AllowedPolicies []Policy

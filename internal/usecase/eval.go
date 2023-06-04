@@ -9,6 +9,7 @@ import (
 
 type Eval struct {
 	YAMLDocsPort port.YAMLDocsPort
+	Config       domain.Config
 }
 
 func (e Eval) Do(baseline, new string) error {
@@ -39,9 +40,7 @@ func (e Eval) Do(baseline, new string) error {
 		diffs = append(diffs, diff...)
 	}
 
-	policies := []domain.Policy{
-		{Path: ".spec.template.metadata.labels.version", ChangeType: domain.ChangeTypeAdd, Recursive: false},
-	}
+	policies := e.Config.AllowedPolicies
 	pc := domain.NewPolicyChecker(policies)
 	pc.CheckAll(diffs)
 
