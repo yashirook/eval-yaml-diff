@@ -10,7 +10,6 @@ func main() {
 
 	err := eval.Do("../example/source.yaml", "../example/target.yaml")
 	if err != nil {
-		// fmt.Println(err)
 		os.Exit(1)
 	}
 
