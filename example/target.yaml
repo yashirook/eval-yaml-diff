@@ -1,0 +1,36 @@
+---
+metadata:
+  name: my-service
+spec:
+  ports:
+  - protocol: TCP
+    targetPort: 9376
+    port: 8080
+  selector:
+    app: MyApp
+apiVersion: v1
+kind: Service
+---
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  selector:
+    matchLabels:
+      app: MyApp
+  replicas: 10
+  template:
+    metadata:
+      labels:
+        app: MyApp
+        version: 0.0.1
+    spec:
+      containers:
+      - name: app
+        ports:
+        - containerPort: 9376
+        - secondPort: 1010
+        image: my-app:1.1.0
+metadata:
+  name: app-deployment
+  labels:
+    app: MyApp
