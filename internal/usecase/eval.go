@@ -43,7 +43,7 @@ func (e Eval) Do(baseline, new string) error {
 		{Path: ".spec.template.metadata.labels.version", ChangeType: domain.ChangeTypeAdd, Recursive: false},
 	}
 	pc := domain.NewPolicyChecker(policies)
-	pc.ScanAll(diffs)
+	pc.CheckAll(diffs)
 
 	return nil
 }
