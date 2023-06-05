@@ -1,0 +1,7 @@
+allowedPolicies:
+  - path: .spec.template.metadata.labels.version
+    changeType: add
+    recursive: false
+  - path: .spec.template.spec.containers[0].image
+    changeType: change
+    recursive: false

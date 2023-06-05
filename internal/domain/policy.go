@@ -3,9 +3,9 @@ package domain
 import "fmt"
 
 type Policy struct {
-	Path       string
-	ChangeType ChangeType
-	Recursive  bool
+	Path       string     `yaml:"path"`
+	ChangeType ChangeType `yaml:"changeType"`
+	Recursive  bool       `yaml:"recursive"`
 }
 
 type PolicyChecker struct {
@@ -18,25 +18,32 @@ func NewPolicyChecker(policies []Policy) PolicyChecker {
 	}
 }
 
-func (pc PolicyChecker) ScanAll(diffs DiffList) error {
-	evaluatedDiffs := make([]Diff, 0)
+func (pc PolicyChecker) CheckAll(diffs DiffList) error {
+	allowedDiffs := make([]Diff, 0)
+	deniedDiffs := make([]Diff, 0)
 	for _, diff := range diffs {
-		if allowed, err := pc.Check(diff); allowed {
-			evaluatedDiffs = append(evaluatedDiffs, diff.Allow())
-		} else if err != nil {
-			return err
+		if ok := pc.Check(diff); ok {
+			allowedDiffs = append(allowedDiffs, diff.Allow())
+		} else {
+			deniedDiffs = append(deniedDiffs, diff)
 		}
 	}
-	fmt.Println(evaluatedDiffs)
+	fmt.Println(allowedDiffs)
+	fmt.Println(deniedDiffs)
 	return nil
 }
 
-func (pc PolicyChecker) Check(diff Diff) (bool, error) {
+func (pc PolicyChecker) Check(diff Diff) bool {
 	for _, policy := range pc.Policies {
-		if diff.Path == policy.Path && diff.ChangeType == policy.ChangeType {
-			return true, nil
+		matchPath := diff.Path == policy.Path
+		if policy.Recursive {
+			matchPath = len(diff.Path) >= len(policy.Path) && diff.Path[:len(policy.Path)] == policy.Path
+		}
+
+		if matchPath && (policy.ChangeType == ChangeTypeAll || diff.ChangeType == policy.ChangeType) {
+			return true
 		}
 	}
 
-	return false, nil
+	return false
 }
