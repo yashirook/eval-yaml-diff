@@ -35,7 +35,12 @@ func (pc PolicyChecker) CheckAll(diffs DiffList) error {
 
 func (pc PolicyChecker) Check(diff Diff) bool {
 	for _, policy := range pc.Policies {
-		if diff.Path == policy.Path && diff.ChangeType == policy.ChangeType {
+		matchPath := diff.Path == policy.Path
+		if policy.Recursive {
+			matchPath = len(diff.Path) >= len(policy.Path) && diff.Path[:len(policy.Path)] == policy.Path
+		}
+
+		if matchPath && (policy.ChangeType == ChangeTypeAll || diff.ChangeType == policy.ChangeType) {
 			return true
 		}
 	}

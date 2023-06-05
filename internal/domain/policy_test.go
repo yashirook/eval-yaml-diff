@@ -15,20 +15,47 @@ func TestCheck(t *testing.T) {
 		{
 			name: "Matching policy exists",
 			policies: []domain.Policy{
-				{Path: "path1", ChangeType: "change"},
-				{Path: "path2", ChangeType: "add"},
+				{Path: ".metadata.name", ChangeType: "change", Recursive: false},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
 			},
-			diff:     domain.Diff{Path: "path1", ChangeType: "change"},
+			diff:     domain.Diff{Path: ".spec.containers[0].image", ChangeType: "change"},
 			expected: true,
 		},
 		{
 			name: "Matching policy does not exist",
 			policies: []domain.Policy{
-				{Path: "path1", ChangeType: "change"},
-				{Path: "path2", ChangeType: "add"},
+				{Path: ".metadata.name", ChangeType: "change", Recursive: false},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
 			},
-			diff:     domain.Diff{Path: "path3", ChangeType: "change"},
+			diff:     domain.Diff{Path: ".spec.containers[0].name", ChangeType: "change"},
 			expected: false,
+		},
+		{
+			name: "Matching policy does exist(recursive pettern)",
+			policies: []domain.Policy{
+				{Path: ".metadata", ChangeType: "change", Recursive: true},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
+			},
+			diff:     domain.Diff{Path: ".metadata.name", ChangeType: "change"},
+			expected: true,
+		},
+		{
+			name: "Matching policy does not exist(recursive pettern)",
+			policies: []domain.Policy{
+				{Path: ".metadata", ChangeType: "change", Recursive: true},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
+			},
+			diff:     domain.Diff{Path: ".spec", ChangeType: "add"},
+			expected: false,
+		},
+		{
+			name: "Matching policy does exist(change type all pettern)",
+			policies: []domain.Policy{
+				{Path: ".metadata", ChangeType: "all", Recursive: true},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
+			},
+			diff:     domain.Diff{Path: ".metadata.name", ChangeType: "add"},
+			expected: true,
 		},
 	}
 
