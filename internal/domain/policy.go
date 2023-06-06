@@ -32,7 +32,7 @@ func (pc PolicyChecker) Check(diff Diff) bool {
 	for _, policy := range pc.Policies {
 		matchPath := diff.Path == policy.Path
 		if policy.Recursive {
-			matchPath = len(diff.Path) >= len(policy.Path) && diff.Path[:len(policy.Path)] == policy.Path
+			matchPath = len(diff.Path) >= len(policy.Path) && diff.Path[:len(policy.Path)+1] == policy.Path+"."
 		}
 
 		if matchPath && (policy.ChangeType == ChangeTypeAll || diff.ChangeType == policy.ChangeType) {

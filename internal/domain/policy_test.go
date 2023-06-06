@@ -57,6 +57,15 @@ func TestCheck(t *testing.T) {
 			diff:     domain.Diff{Path: ".metadata.name", ChangeType: "add"},
 			expected: true,
 		},
+		{
+			name: "Matching policy does not exist(recursive unintentionally)",
+			policies: []domain.Policy{
+				{Path: ".metadata", ChangeType: "all", Recursive: true},
+				{Path: ".spec.containers[0].image", ChangeType: "change", Recursive: false},
+			},
+			diff:     domain.Diff{Path: ".metadatahoge", ChangeType: "add"},
+			expected: false,
+		},
 	}
 
 	for _, tc := range tests {
