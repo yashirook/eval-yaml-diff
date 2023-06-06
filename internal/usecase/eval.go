@@ -4,11 +4,11 @@ import (
 	"eval-yaml-diff/internal/domain"
 	"eval-yaml-diff/internal/port"
 	"fmt"
-	"log"
 )
 
 type Eval struct {
 	YAMLDocsPort port.YAMLDocsPort
+	PrintPort    port.PrintPort
 	Config       domain.Config
 }
 
@@ -36,13 +36,17 @@ func (e Eval) Do(baseline, new string) error {
 		if err != nil {
 			return err
 		}
-		log.Println(diff)
 		diffs = append(diffs, diff...)
 	}
 
 	policies := e.Config.AllowedPolicies
 	pc := domain.NewPolicyChecker(policies)
-	pc.CheckAll(diffs)
+	evaluatedDiffs, err := pc.CheckAll(diffs)
+	if err != nil {
+		return err
+	}
+
+	e.PrintPort.Print(evaluatedDiffs)
 
 	return nil
 }

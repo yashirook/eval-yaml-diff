@@ -42,6 +42,7 @@ func Run(args []string) {
 
 	eval := usecase.Eval{
 		YAMLDocsPort: &gateway.LocalYAMLDocsGateway{},
+		PrintPort:    &gateway.PrintGateway{},
 		Config:       config,
 	}
 

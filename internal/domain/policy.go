@@ -1,7 +1,5 @@
 package domain
 
-import "fmt"
-
 type Policy struct {
 	Path       string     `yaml:"path"`
 	ChangeType ChangeType `yaml:"changeType"`
@@ -27,7 +25,6 @@ func (pc PolicyChecker) CheckAll(diffs DiffList) (DiffList, error) {
 			newDiffs = append(newDiffs, diff)
 		}
 	}
-	fmt.Println(newDiffs)
 	return newDiffs, nil
 }
 
