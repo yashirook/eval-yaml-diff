@@ -2,6 +2,7 @@ package domain_test
 
 import (
 	"eval-yaml-diff/internal/domain"
+	"reflect"
 	"testing"
 )
 
@@ -78,5 +79,38 @@ func TestCheck(t *testing.T) {
 				t.Errorf("expected: %v, got: %v", tc.expected, result)
 			}
 		})
+	}
+}
+
+func TestCheckAll(t *testing.T) {
+	pc := domain.PolicyChecker{
+		Policies: []domain.Policy{
+			{Path: "path1", ChangeType: domain.ChangeTypeAdd},
+			{Path: "path2", ChangeType: domain.ChangeTypeDelete},
+			{Path: "path4", ChangeType: domain.ChangeTypeAll},
+		},
+	}
+
+	diffs := domain.DiffList{
+		{Path: "path1", ChangeType: domain.ChangeTypeAdd},
+		{Path: "path2", ChangeType: domain.ChangeTypeChange},
+		{Path: "path3", ChangeType: domain.ChangeTypeDelete},
+		{Path: "path4", ChangeType: domain.ChangeTypeAdd},
+	}
+
+	expected := domain.DiffList{
+		{Path: "path1", ChangeType: domain.ChangeTypeAdd, Allowed: true},
+		{Path: "path2", ChangeType: domain.ChangeTypeChange},
+		{Path: "path3", ChangeType: domain.ChangeTypeDelete},
+		{Path: "path4", ChangeType: domain.ChangeTypeAdd, Allowed: true},
+	}
+
+	result, err := pc.CheckAll(diffs)
+	if err != nil {
+		t.Errorf("CheckAll returned an error: %v", err)
+	}
+
+	if !reflect.DeepEqual(result, expected) {
+		t.Errorf("CheckAll result mismatch\nExpected: %+v\nActual: %+v", expected, result)
 	}
 }
