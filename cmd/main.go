@@ -12,6 +12,12 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const (
+	ExitCodeAllowed        = 0
+	ExitCodeSomethingError = 1
+	ExitCodeDenied         = 2
+)
+
 var configPath string
 
 func init() {
@@ -25,19 +31,21 @@ func main() {
 		log.Fatalln("Please specify the paths of the YAML files using the first and second arguments.")
 	}
 
-	Run(args)
+	os.Exit(Run(args, configPath))
 }
 
-func Run(args []string) {
-	configData, err := ioutil.ReadFile(configPath)
+func Run(args []string, cp string) int {
+	configData, err := ioutil.ReadFile(cp)
 	if err != nil {
-		log.Fatalln("Failed to read config file")
+		log.Println("Failed to read config file")
+		return ExitCodeSomethingError
 	}
 
 	var config domain.Config
 	err = yaml.Unmarshal(configData, &config)
 	if err != nil {
-		log.Fatalln("Failed to parse config file. Please check file format.")
+		log.Println("Failed to parse config file. Please check file format.")
+		return ExitCodeSomethingError
 	}
 
 	eval := usecase.Eval{
@@ -48,10 +56,11 @@ func Run(args []string) {
 
 	err = eval.Do(args[0], args[1])
 	if err == usecase.DifferentDocumentNumberError || err == usecase.DeniedDiffExistError {
-		os.Exit(2)
+		return ExitCodeDenied
 	}
 	if err != nil {
-		os.Exit(1)
+		return ExitCodeSomethingError
 	}
-	os.Exit(0)
+
+	return ExitCodeAllowed
 }

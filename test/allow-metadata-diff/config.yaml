@@ -1,0 +1,4 @@
+allowedPolicies:
+  - path: .metadata
+    changeType: all
+    recursive: true
