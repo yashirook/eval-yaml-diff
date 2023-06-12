@@ -16,7 +16,7 @@ func NewPolicyChecker(policies []Policy) PolicyChecker {
 	}
 }
 
-func (pc PolicyChecker) CheckAll(diffs DiffList) (DiffList, error) {
+func (pc PolicyChecker) CheckAll(diffs DiffList) DiffList {
 	newDiffs := make([]Diff, 0)
 	for _, diff := range diffs {
 		if ok := pc.Check(diff); ok {
@@ -25,7 +25,7 @@ func (pc PolicyChecker) CheckAll(diffs DiffList) (DiffList, error) {
 			newDiffs = append(newDiffs, diff)
 		}
 	}
-	return newDiffs, nil
+	return newDiffs
 }
 
 func (pc PolicyChecker) Check(diff Diff) bool {

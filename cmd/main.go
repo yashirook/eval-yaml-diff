@@ -47,6 +47,9 @@ func Run(args []string) {
 	}
 
 	err = eval.Do(args[0], args[1])
+	if err == usecase.DifferentDocumentNumberError || err == usecase.DeniedDiffExistError {
+		os.Exit(2)
+	}
 	if err != nil {
 		os.Exit(1)
 	}

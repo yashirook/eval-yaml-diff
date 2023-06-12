@@ -25,7 +25,7 @@ func (e Eval) Do(baseline, new string) error {
 	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
 	if len(baseYamlDocs) != len(newYamlDocs) {
 		fmt.Println("Different number of yaml documents")
-		return err
+		return DifferentDocumentNumberError
 	}
 
 	diffFinder := domain.DiffFinder{}
@@ -41,12 +41,23 @@ func (e Eval) Do(baseline, new string) error {
 
 	policies := e.Config.AllowedPolicies
 	pc := domain.NewPolicyChecker(policies)
-	evaluatedDiffs, err := pc.CheckAll(diffs)
-	if err != nil {
-		return err
-	}
+	evaluatedDiffs := pc.CheckAll(diffs)
 
 	e.PrintPort.Print(evaluatedDiffs)
 
+	if denied := isDinied(evaluatedDiffs); denied {
+		return DeniedDiffExistError
+	}
+
 	return nil
+}
+
+func isDinied(diffs domain.DiffList) bool {
+	var isDenied bool
+	for _, diff := range diffs {
+		if diff.Allowed {
+			isDenied = true
+		}
+	}
+	return isDenied
 }
