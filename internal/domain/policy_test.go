@@ -105,10 +105,7 @@ func TestCheckAll(t *testing.T) {
 		{Path: "path4", ChangeType: domain.ChangeTypeAdd, Allowed: true},
 	}
 
-	result, err := pc.CheckAll(diffs)
-	if err != nil {
-		t.Errorf("CheckAll returned an error: %v", err)
-	}
+	result := pc.CheckAll(diffs)
 
 	if !reflect.DeepEqual(result, expected) {
 		t.Errorf("CheckAll result mismatch\nExpected: %+v\nActual: %+v", expected, result)
