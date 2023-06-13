@@ -16,14 +16,14 @@ func TestRun(t *testing.T) {
 			name:           "Denied Diff",
 			baseFilePath:   "../example/base.yaml",
 			newFilePath:    "../example/new.yaml",
-			policyFilePath: "./config.yaml",
+			policyFilePath: "../config.yaml",
 			exitCode:       ExitCodeDenied,
 		},
 		{
 			name:           "Equal Manifests",
 			baseFilePath:   "../test/allow-equal-manifests/base.yaml",
 			newFilePath:    "../test/allow-equal-manifests/new.yaml",
-			policyFilePath: "./config.yaml",
+			policyFilePath: "../test/allow-equal-manifests/config.yaml",
 			exitCode:       ExitCodeAllowed,
 		},
 		{
@@ -35,9 +35,9 @@ func TestRun(t *testing.T) {
 		},
 		{
 			name:           "Allowed Diff(different image tag)",
-			baseFilePath:   "../test/allow-metadata-diff/base.yaml",
-			newFilePath:    "../test/allow-metadata-diff/new.yaml",
-			policyFilePath: "../test/allow-metadata-diff/config.yaml",
+			baseFilePath:   "../test/allow-metadata-recursive-diff/base.yaml",
+			newFilePath:    "../test/allow-metadata-recursive-diff/new.yaml",
+			policyFilePath: "../test/allow-metadata-recursive-diff/config.yaml",
 			exitCode:       ExitCodeAllowed,
 		},
 		{
@@ -53,6 +53,20 @@ func TestRun(t *testing.T) {
 			newFilePath:    "../test/deny-different-port/new.yaml",
 			policyFilePath: "../test/deny-different-port/config.yaml",
 			exitCode:       ExitCodeDenied,
+		},
+		{
+			name:           "Denied Diff(different port)",
+			baseFilePath:   "../test/deny-different-port/base-noexist.yaml",
+			newFilePath:    "../test/deny-different-port/new.yaml",
+			policyFilePath: "../test/deny-different-port/config.yaml",
+			exitCode:       ExitCodeSomethingError,
+		},
+		{
+			name:           "Denied Diff(different port)",
+			baseFilePath:   "../test/deny-different-port/base.yaml",
+			newFilePath:    "../test/deny-different-port/new.yaml",
+			policyFilePath: "../test/deny-different-port/config-noexist.yaml",
+			exitCode:       ExitCodeSomethingError,
 		},
 	}
 
