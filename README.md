@@ -1,11 +1,11 @@
 # eval-yaml-diff
-Eval YAML Diff CLI is a command-line tool that compares the differences between two YAML files (multi-document) and validates them against predefined policies (in YAML format).
+eval-yaml-diff is a command-line tool that compares the differences between two YAML files (multi-document) and validates them against predefined policies (in YAML format).
 
 ## Features
 
 - Compares the differences between two YAML files (multi-document) and identifies the paths where differences occurred along with the change type (add/delete/change).
 - Validates the differences against predefined policies and returns an exit code indicating if there are any policy violations.
-- Supports specifying a policy configuration file using the `--config` option.
+  - specifying a policy configuration file using the `--config` option.
 
 ## Installation
 
@@ -20,12 +20,12 @@ Eval YAML Diff CLI is a command-line tool that compares the differences between 
 ### Using tar.gz distribution
 1. Download the appropriate version of the tar.gz archive from the releases page.
 
-1. Extract the archive by running the following command:
+2. Extract the archive by running the following command:
 
     ```shell
     $ tar -zxvf <archive-filename>.tar.gz
     ```
-1. Navigate to the extracted directory:
+3. Navigate to the extracted directory:
 
     ```shell
     $ cd <extracted-directory>
@@ -37,20 +37,19 @@ To see the usage instructions for the CLI tool, run the following command:
 
 ```shell
 $ yaml-diff-checker --config config.yaml example/base.yaml example/new.yaml
-                   PATH                   | CHANGE TYPE | EVAL RESULT  
-------------------------------------------+-------------+--------------
-  .spec.ports[0].port                     | CHANGE      | DENIED       
-  .spec.template.metadata.labels.version  | ADD         | ALLOWED      
-  .spec.template.spec.containers[0].image | CHANGE      | ALLOWED      
-  .spec.template.spec.containers[0].ports | CHANGE      | DENIED       
-  .spec.replicas                          | CHANGE      | DENIED  
+PATH                                            CHANGE_TYPE     RESULT          
+.spec.ports[0].port                             change          DENIED
+.spec.template.metadata.labels.version          add             ALLOWED
+.spec.template.spec.containers[0].image         change          ALLOWED
+.spec.template.spec.containers[0].ports         change          DENIED
+.spec.replicas                                  change          DENIED
 
-# incase of exist DENIED diff, return exit status(2).
+# in case of exist DENIED diff, return exit status(2).
 $ echo $?
 2
 ```
 
-### Used files
+### Sample config and compare files
 
 `config.yaml`
 ```yaml:config.yaml
