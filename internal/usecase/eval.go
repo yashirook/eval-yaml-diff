@@ -3,6 +3,7 @@ package usecase
 import (
 	"eval-yaml-diff/internal/domain"
 	"eval-yaml-diff/internal/port"
+	"fmt"
 )
 
 type Eval struct {
@@ -11,6 +12,7 @@ type Eval struct {
 	Config       domain.Config
 }
 
+// Doのテストは処理の流れをテストする感じ
 func (e Eval) Do(baseline, new string) error {
 	baseYamlDocs, err := e.YAMLDocsPort.Get(baseline)
 	if err != nil {
@@ -23,6 +25,7 @@ func (e Eval) Do(baseline, new string) error {
 
 	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
 	if len(baseYamlDocs) != len(newYamlDocs) {
+		fmt.Println("Different number of documents are not supported")
 		return DifferentDocumentNumberError
 	}
 
@@ -41,7 +44,10 @@ func (e Eval) Do(baseline, new string) error {
 	pc := domain.NewPolicyChecker(policies)
 	evaluatedDiffs := pc.CheckAll(diffs)
 
-	e.PrintPort.Print(evaluatedDiffs)
+	err = e.PrintPort.Print(evaluatedDiffs)
+	if err != nil {
+		return err
+	}
 
 	if denied := isDinied(evaluatedDiffs); denied {
 		return DeniedDiffExistError

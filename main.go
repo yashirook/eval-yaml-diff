@@ -5,6 +5,7 @@ import (
 	"eval-yaml-diff/internal/gateway"
 	"eval-yaml-diff/internal/usecase"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -56,9 +57,11 @@ func Run(args []string, cp string) int {
 
 	err = eval.Do(args[0], args[1])
 	if err == usecase.DifferentDocumentNumberError || err == usecase.DeniedDiffExistError {
+		fmt.Println(err)
 		return ExitCodeDenied
 	}
 	if err != nil {
+		fmt.Println(err)
 		return ExitCodeSomethingError
 	}
 
