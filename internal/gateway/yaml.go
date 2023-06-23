@@ -1,3 +1,4 @@
+// gatewayは外部から取った情報をdomainに変換する
 package gateway
 
 import (
@@ -7,6 +8,7 @@ import (
 
 type LocalYAMLDocsGateway struct{}
 
+// driverでioutilをスタブ化させるとテスト書きやすいかも
 func (l LocalYAMLDocsGateway) Get(path string) (domain.YamlDocs, error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {

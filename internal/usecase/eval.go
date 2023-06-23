@@ -11,6 +11,7 @@ type Eval struct {
 	Config       domain.Config
 }
 
+// Doのテストは処理の流れをテストする感じ
 func (e Eval) Do(baseline, new string) error {
 	baseYamlDocs, err := e.YAMLDocsPort.Get(baseline)
 	if err != nil {
@@ -41,7 +42,10 @@ func (e Eval) Do(baseline, new string) error {
 	pc := domain.NewPolicyChecker(policies)
 	evaluatedDiffs := pc.CheckAll(diffs)
 
-	e.PrintPort.Print(evaluatedDiffs)
+	err = e.PrintPort.Print(evaluatedDiffs)
+	if err != nil {
+		return err
+	}
 
 	if denied := isDinied(evaluatedDiffs); denied {
 		return DeniedDiffExistError
