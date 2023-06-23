@@ -3,7 +3,6 @@ package gateway
 import (
 	"eval-yaml-diff/internal/domain"
 	"fmt"
-	"log"
 	"os"
 	"text/tabwriter"
 )
@@ -11,7 +10,7 @@ import (
 type PrintGateway struct{}
 
 func (pg PrintGateway) Print(diffs domain.DiffList) error {
-	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 0, '\t', tabwriter.AlignRight)
+	tw := tabwriter.NewWriter(os.Stdout, 0, 8, 4, '\t', tabwriter.AlignRight)
 	fmt.Fprintln(tw, "PATH\tCHANGE_TYPE\tRESULT\t")
 
 	for _, diff := range diffs {
@@ -23,7 +22,6 @@ func (pg PrintGateway) Print(diffs domain.DiffList) error {
 	}
 
 	if err := tw.Flush(); err != nil {
-		log.Printf("flushing error: %s", err)
 		return err
 	}
 	return nil

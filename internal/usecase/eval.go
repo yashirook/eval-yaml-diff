@@ -12,7 +12,6 @@ type Eval struct {
 	Config       domain.Config
 }
 
-// Doのテストは処理の流れをテストする感じ
 func (e Eval) Do(baseline, new string) error {
 	baseYamlDocs, err := e.YAMLDocsPort.Get(baseline)
 	if err != nil {
@@ -25,13 +24,12 @@ func (e Eval) Do(baseline, new string) error {
 
 	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
 	if len(baseYamlDocs) != len(newYamlDocs) {
-		fmt.Println("Different number of documents are not supported")
+		fmt.Println(DifferentDocumentNumberError)
 		return DifferentDocumentNumberError
 	}
 
 	diffFinder := domain.DiffFinder{}
 	diffs := make(domain.DiffList, 0)
-	// TODO: マルチドキュメントの場合にいい感じに差分を取得できるようにする
 	for i, baseYamlDoc := range baseYamlDocs {
 		diff, err := diffFinder.Find(baseYamlDoc, newYamlDocs[i])
 		if err != nil {
@@ -49,14 +47,14 @@ func (e Eval) Do(baseline, new string) error {
 		return err
 	}
 
-	if denied := isDinied(evaluatedDiffs); denied {
+	if denied := isDenied(evaluatedDiffs); denied {
 		return DeniedDiffExistError
 	}
 
 	return nil
 }
 
-func isDinied(diffs domain.DiffList) bool {
+func isDenied(diffs domain.DiffList) bool {
 	var isDenied bool
 	for _, diff := range diffs {
 		if !diff.Allowed {

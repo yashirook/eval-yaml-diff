@@ -6,7 +6,6 @@ import (
 	"eval-yaml-diff/internal/usecase"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -22,23 +21,24 @@ const (
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "config", "config.yaml", "config file for policys")
+	flag.StringVar(&configPath, "config", "config.yaml", "config file for policies")
 }
 
 func main() {
 	flag.Parse()
 	args := flag.Args()
 	if len(args) != 2 {
-		log.Fatalln("Please specify the paths of the YAML files using the first and second arguments.")
+		fmt.Println("Please specify the paths of the YAML files using the first and second arguments.")
+		os.Exit(1)
 	}
 
 	os.Exit(Run(args, configPath))
 }
 
 func Run(args []string, cp string) int {
-	configData, err := ioutil.ReadFile(cp)
+	configData, err := os.ReadFile(cp)
 	if err != nil {
-		log.Println("Failed to read config file")
+		log.Println(err)
 		return ExitCodeSomethingError
 	}
 
@@ -57,11 +57,11 @@ func Run(args []string, cp string) int {
 
 	err = eval.Do(args[0], args[1])
 	if err == usecase.DifferentDocumentNumberError || err == usecase.DeniedDiffExistError {
-		fmt.Println(err)
 		return ExitCodeDenied
 	}
 	if err != nil {
 		fmt.Println(err)
+
 		return ExitCodeSomethingError
 	}
 

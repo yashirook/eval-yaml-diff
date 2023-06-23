@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -56,7 +57,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			name:           "Denied Diff(different port)",
-			baseFilePath:   "test/deny-different-port/base-noexist.yaml",
+			baseFilePath:   "test/deny-different-port/base-not-exist.yaml",
 			newFilePath:    "test/deny-different-port/new.yaml",
 			policyFilePath: "test/deny-different-port/config.yaml",
 			exitCode:       ExitCodeSomethingError,
@@ -65,12 +66,13 @@ func TestRun(t *testing.T) {
 			name:           "Denied Diff(different port)",
 			baseFilePath:   "test/deny-different-port/base.yaml",
 			newFilePath:    "test/deny-different-port/new.yaml",
-			policyFilePath: "test/deny-different-port/config-noexist.yaml",
+			policyFilePath: "test/deny-different-port/config-not-exist.yaml",
 			exitCode:       ExitCodeSomethingError,
 		},
 	}
 
 	for _, test := range tests {
+		fmt.Printf("==Start Test (%s) ==\n", test.name)
 		code := Run([]string{test.baseFilePath, test.newFilePath}, test.policyFilePath)
 		if code != test.exitCode {
 			t.Errorf("expected: %v, got: %v", test.exitCode, code)

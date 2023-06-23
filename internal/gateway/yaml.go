@@ -1,20 +1,17 @@
-// gatewayは外部から取った情報をdomainに変換する
 package gateway
 
 import (
 	"bytes"
 	"eval-yaml-diff/internal/domain"
-	"io"
-	"io/ioutil"
-
 	"gopkg.in/yaml.v2"
+	"io"
+	"os"
 )
 
 type LocalYAMLDocsGateway struct{}
 
-// driverでioutilをスタブ化させるとテスト書きやすいかも
 func (l LocalYAMLDocsGateway) Get(path string) (domain.YamlDocs, error) {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
