@@ -3,6 +3,7 @@ package usecase
 import (
 	"eval-yaml-diff/internal/domain"
 	"eval-yaml-diff/internal/port"
+	"fmt"
 )
 
 type Eval struct {
@@ -24,6 +25,7 @@ func (e Eval) Do(baseline, new string) error {
 
 	// TODO: ドキュメントの数が違う場合にいい感じに処理できるようにする
 	if len(baseYamlDocs) != len(newYamlDocs) {
+		fmt.Println("Different number of documents are not supported")
 		return DifferentDocumentNumberError
 	}
 
